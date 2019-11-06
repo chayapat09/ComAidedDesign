@@ -25,12 +25,35 @@ class Find_root{
         std::vector<float> calculated_values;
         std::vector<std::string> calculated_methods;
         std::vector<float> calculated_error; // 0.1 0.05 ...
+        std::vector<size_t> no_iterations;
         size_t log_size;
 
     public:
         Find_root(std::string eqn){
-
+            // Default Constructor && Initialize values
+            equation = eqn;
+            allowed_error = 0.01; //Default maximum error = 1%
+            calculated_values = std::vector<float>();
+            calculated_methods = std::vector<std::string>();
+            calculated_error = std::vector<float>();
+            no_iterations = std::vector<size_t>();
+            log_size = 0;
         }
+
+        Find_root(std::string eqn ,float error) {
+            // Constructor with specified allowed_error
+            allowed_error = error;
+        }
+
+        void change_error(float err){
+            allowed_error = err;
+        }
+
+        void show_log(){
+            
+        }
+
+
 };
 
 
