@@ -19,6 +19,13 @@ class Logging{
         size_t no_iterations;
 
     public:
+        Logging(float calculated_values , std::string calculated_methods ,float calculated_error, size_t no_iterations){
+            this->calculated_values  = calculated_values;
+            this->calculated_methods = calculated_methods;
+            this->calculated_error   = calculated_error;
+            this->no_iterations      = no_iterations;
+        }
+
         void show_log(){
             // Show log print string
         } 
@@ -31,6 +38,13 @@ class Logging{
             return calculated_methods;
         }
 
+        float get_calculated_error(){
+            return calculated_error;
+        }
+
+        size_t get_no_iterations(){
+            return no_iterations;
+        }
         
 };
 
