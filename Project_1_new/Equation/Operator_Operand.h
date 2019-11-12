@@ -4,6 +4,9 @@
 #include <math.h>
 #include <vector>
 
+#ifndef _CHAYAPAT_OPS_
+#define _CHAYAPAT_OPS_
+//pragma once
 namespace COMAID{
 
     class Operator_Operand{
@@ -39,6 +42,14 @@ namespace COMAID{
         Operator_Operand(int value){
             this->isOperator = false;
             this->str = "";
+            this->Required_operand = 0;
+            this->outPriority = 0;
+            this->inPriority = 0;
+            this->value = (float) value;
+        }
+        Operator_Operand(std::string var){
+            this->isOperator = false;
+            this->str = var;
             this->Required_operand = 0;
             this->outPriority = 0;
             this->inPriority = 0;
@@ -264,3 +275,4 @@ namespace COMAID{
     };
 
 }
+#endif
