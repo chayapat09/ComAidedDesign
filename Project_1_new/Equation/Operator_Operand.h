@@ -6,7 +6,7 @@
 
 #ifndef _CHAYAPAT_OPS_
 #define _CHAYAPAT_OPS_
-//pragma once
+//! #pragma once
 namespace COMAID{
 
     class Operator_Operand{

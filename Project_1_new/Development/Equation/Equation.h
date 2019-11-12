@@ -11,6 +11,7 @@
 
 #ifndef _CHAYAPAT_EQUATION_
 #define _CHAYAPAT_EQUATION_
+//! #pragma once
 namespace COMAID{
 
     class Equation{
@@ -20,6 +21,7 @@ namespace COMAID{
 
             void to_equation(std::vector<std::string> eqn){
                 for(auto ops : eqn){
+                    float e = 2.71828;
                     Operator_Operand * tmp;
                     if      (ops == "sinh") tmp = new sinh();
                     else if (ops == "sin" ) tmp = new sin();
@@ -31,13 +33,15 @@ namespace COMAID{
                     else if (ops == "("   ) tmp = new open_parentheses();
                     else if (ops == ")"   ) tmp = new close_parentheses();
                     else if (ops == "+"   ) tmp = new plus();
-                    else if (ops == "-"   ) tmp = new minus();
                     else if (ops == "*"   ) tmp = new multipy();
                     else if (ops == "/"   ) tmp = new devide();
+                    else if (ops == "-"   ) tmp = new minus();
                     else if (ops == "^"   ) tmp = new power();
                     else if (ops == "x"   ) tmp = new Operator_Operand("x"); // Varible fix to "x"
+                    else if (ops == "-x"  ) tmp = new Operator_Operand("-x");
+                    else if (ops == "e"   ) tmp = new Operator_Operand(e);
                     else {
-                        // Check double dot operator errors here "1.22.33" "xsine" ...
+                        // Errors can be check here Eg. double dot operator errors here "1.22.33" "xsine" ...
                         tmp = new Operator_Operand( std::stof(ops) );
                     }
 
@@ -75,15 +79,12 @@ namespace COMAID{
                 //Delete and change charecter to charecter that can be calculated
                 std::string out;
 
-                
                 for (char i : eqn){
                     //if      (i == 'e' ) out += "2.71828"  ;
                     if (i == ' ' ) continue  ; //Clean blank spaces 
                     else if ('A' <= i && i <= 'Z' ) out.push_back( 'a' + (i - 'A') ); //Change Upper cases to lower cases
                     else out.push_back(i);
                 }
-
-                //Clean Upper case letters
 
                 return out;
             }
@@ -103,11 +104,10 @@ namespace COMAID{
                     ops.push_back(std::make_pair("("     ," ( "       ));
                     ops.push_back(std::make_pair(")"     ," ) "       ));
                     ops.push_back(std::make_pair("+"     ," + "       ));
-                    ops.push_back(std::make_pair("-"     ," - "       ));
                     ops.push_back(std::make_pair("*"     ," * "       ));
                     ops.push_back(std::make_pair("/"     ," / "       ));
                     ops.push_back(std::make_pair("^"     ," ^ "       ));
-                    ops.push_back(std::make_pair(variable ," " + variable + " " ));
+                    //ops.push_back(std::make_pair(variable ," " + variable + " " ));
 
                 // Seperate string by spaces " " ; Ex. "2cos(x)+5" -> " 2 cos ( x ) + 5 "
                 for (auto i : ops){
@@ -121,8 +121,42 @@ namespace COMAID{
                 while(eqn_stream >> tmp){
                     out.push_back(tmp);
                 }
+                //for (auto i : out) std::cout << i << std::endl;
+                // Handle negative number cases
+                // Check for cases [ "-" , "-x" , "-2" , "x-2" , "2-x" , () - 1 -> ")"  , "-1"]
+                // -(x+y) -> "-" "(" .. , 4*-2 -> "4" "*" "-2" , 2*(-x+3) -> "2" "*" "(" "-x" / "-2" "+"
+                // 1-x > "1-x" ( ")" "-1" 
+                std::vector<std::string> out_fix_neg;
+                for (int i = 0 ; i < out.size() ; i++){
+                    // Find do '-' exists in out[i]
+                    int idx = 0;
+                    for ( ; idx < out[i].length() ; idx++ ){
+                        if (out[i][idx] == '-'){
+                            break;
+                        }
+                    }
 
-                return out;
+                    if (idx != out[i].length()){ // Case found
+                        if (idx == 0){
+                            if (i != 0 && out[i-1] == ")"){
+                                out_fix_neg.push_back("-");
+                                out_fix_neg.push_back(out[i].substr(1));
+                            }
+                            else{
+                                out_fix_neg.push_back(out[i]);
+                            }
+                        }
+                        else{
+                            out_fix_neg.push_back(out[i].substr(0,idx));//left
+                            out_fix_neg.push_back("-");
+                            out_fix_neg.push_back(out[i].substr(idx+1));//right
+
+                        }
+                    }
+                    else out_fix_neg.push_back(out[i]);
+                }
+                //for (auto i : out_fix_neg) std::cout << i << std::endl;
+                return out_fix_neg;
 
             }
 
@@ -204,6 +238,11 @@ namespace COMAID{
                         Operator_Operand * substituded_x = new Operator_Operand(x);
                         tmp_new_x.push_back(substituded_x);
                         to_calculate_eqn.push_back(substituded_x);
+                    }
+                    else if (i->str == "-x"){
+                        Operator_Operand * substituded_x = new Operator_Operand(-x);
+                        tmp_new_x.push_back(substituded_x);
+                        to_calculate_eqn.push_back(substituded_x);                       
                     }
                     else{
                         to_calculate_eqn.push_back(i);

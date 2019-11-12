@@ -60,9 +60,9 @@ def sep_string2(s): # fix var = x
     for i in operator:
         s = s.replace(i[0],i[1])
     return s.split()
-    operand = {'0','1','2','3','4','5','6','7','8','9','.'}
+    operand = {'0','1','2','3','4','5','6','7','8','9','.','x'}
 
-print(sep_string2("2/sinh(s^2+(1))+cos(6)"))
+print(sep_string2("2/sinh(-s^2+(1))+cos(6)"))
 print(sep_string2( "2sine(sinh(cosh(cosh(cos(2^x^x^x^cosh(32.33))))))" ) )
 ''' 
 if ans[i] not corrected -> operator wrong
@@ -71,3 +71,15 @@ check in operator ?
 if not operator -> check multiple .
 
 '''
+
+
+x = sep_string2("2sinh(x^2+2(1))+cos(6)")  # operand , operator that requirevar = 1 or operand , '(' assume i+1 always not last index
+def fix_multipy_operator(eqn):
+    eqn = '1*'+eqn+'*1'
+    operand = {'0','1','2','3','4','5','6','7','8','9','.','x'}
+    #for i in range(len(eqn)):
+
+
+
+def replace_e(eqn):
+    pass
