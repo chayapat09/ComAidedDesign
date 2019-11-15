@@ -30,6 +30,10 @@ int main(){
 
     std::cout << e5.calculate(2) << std::endl;
 
+    Equation e6("x^2 +2*x +1");
+
+    std::cout << e6.calculate(0) << std::endl;
+
 
 
     

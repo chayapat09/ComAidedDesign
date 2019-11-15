@@ -50,6 +50,7 @@ namespace COMAID{
                     equation.push_back(tmp);
                 }
             }
+            
 
         public:
             Equation(){
@@ -255,6 +256,14 @@ namespace COMAID{
                 for (auto i : tmp_new_x) delete i; // Delete new create objects
                 return ans;
             }
+
+        std::vector<std::string> get_equation_string(){
+            std::vector<std::string> out;
+            for (auto i:equation){
+                out.push_back(i->str);
+            }
+            return out;
+        }
 
 
             void clear(){

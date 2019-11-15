@@ -46,7 +46,7 @@ namespace COMAID{
                         }
                     }
                 }
-                if (cnt != 1) throw "Please check for '=' in equation!";
+                if (cnt != 1) throw "Please check for '=' in equation!\n";
                 lhs.set_equation(l_eqn);
                 rhs.set_equation(r_eqn);
             }
@@ -74,15 +74,17 @@ namespace COMAID{
             }
 
             // Numerical Method
-            std::pair<bool,float> bi_section(float a , float b , int max_iterations = 20){
+            std::pair<bool,float> bi_section(float a , float b , int max_iterations = 20, bool display = false){
                 //        This method calculate root from bi_section method 
                 //and return values in form of {boolean,answer value} boolean true stands for
                 //root is between a and b , false stands for root is outside [a,b]
                 float f_left , f_right ,f_mid , x_mid , value_old , value_new , error = 1; // Set initial error to 100%
                 int no_iterations = 0;
                 f_left = calculate(a); f_right = calculate(b);
+                std::cout << f_left << " " << f_right << std::endl;
                 if (f_left * f_right > 0) {
-                    std::cout << "answer is not stays between a and b .Please select new initial conditions" << std::endl;
+                    if (display) std::cout << "answer is not stays between 'a' and 'b' or 'a' and 'b' is too large .Please select new initial conditions" << std::endl;
+                    
                     return std::make_pair(false,0);
                 }
                 while ( error > allowed_error && no_iterations < max_iterations){
@@ -90,7 +92,8 @@ namespace COMAID{
                     f_mid = calculate(x_mid);
                     // Found exact solution
                     if (f_mid == 0 ) {
-                        std::cout << "Iterations NO:" << no_iterations << " Found Exact Solution with x = " << x_mid << std::endl;
+                        if (display)
+                            std::cout << "Iterations NO:" << no_iterations << " Found Exact Solution with x = " << x_mid << std::endl;
                         return std::make_pair(true,x_mid);
                     }
                     // CASE 1 f_mid && f_left are at same side
@@ -108,7 +111,8 @@ namespace COMAID{
                     }
                     error = abs((value_new - value_old)/value_new);
                     no_iterations++;
-                    std::cout << "Iterations NO:" << no_iterations << " X_new =  " << value_new << " Error: " <<  error * 100 << "%" << std::endl;
+                    if (display)
+                        std::cout << "Iterations NO:" << no_iterations << " X_new =  " << value_new << " Error: " <<  error * 100 << "%" << std::endl;
                     
 
                 }
@@ -116,6 +120,76 @@ namespace COMAID{
                 return std::make_pair(true,value_new);
 
             }
+
+            std::pair<bool,float> false_position(float a , float b , int max_iterations = 20, bool display = false){
+                //        This method calculate root from false_position method 
+                //and return values in form of {boolean,answer value} boolean true stands for
+                //root is between a and b , false stands for root is outside [a,b]
+                float f_left , f_right ,f_new , x_new , value_old , value_new , error = 1; // Set initial error to 100%
+                int no_iterations = 0;
+                f_left = calculate(a); f_right = calculate(b);
+                if (f_left * f_right > 0) {
+                    if (display)
+                        std::cout << "answer is not stays between a and b. Please select new initial conditions" << std::endl;
+                    
+                    return std::make_pair(false,0);
+                }
+                while ( error > allowed_error && no_iterations < max_iterations){
+                    x_new = (a*f_right+b*f_left)/(b-a);
+                    f_new = calculate(x_new);
+                    // Found exact solution
+                    if (f_new == 0 ) {
+                        if (display)
+                            std::cout << "Iterations NO:" << no_iterations << " Found Exact Solution with x = " << x_new << std::endl;
+                        return std::make_pair(true,x_new);
+                    }
+                    // CASE 1 f_new && f_left are at same side
+                    if (f_new * f_left > 0){
+                        value_old = a;
+                        a = x_new;
+                        f_left = calculate(a);
+                        value_new = a;
+                    }
+
+                    // CASE 2 f_new && f_right are at same side
+                    else{
+                        value_old = b;
+                        b = x_new;
+                        f_right = calculate(b);
+                        value_new = b;
+                    }
+                    error = abs((value_new - value_old)/value_new);
+                    no_iterations++;
+                    if (display)
+                        std::cout << "Iterations NO:" << no_iterations << " X_new =  " << value_new << " Error: " <<  error * 100 << "%" << std::endl;
+                    
+
+                }
+
+                return std::make_pair(true,value_new);
+
+            }
+
+
+            std::pair<bool,float> one_point_iteration(float a , int max_iterations = 20 , bool display = false){ // Need to constrain user to type in form x = ... 
+                std::vector<std::string> str_lhs = lhs.get_equation_string();
+                //std::vector<std::string> str_rhs = rhs.get_equation_string();
+                if (! (str_lhs.size() == 1 && (str_lhs[0] == "x" || str_lhs[0] == "-x") ) ){
+                    throw "Please Rearrange Equation in form of x = ... to solve in one point iteration method\n" ;
+                }
+                int no_iterations = 1;
+                float last_value = a, new_value,error = 1;// Set initial error to 100%;
+                while (error > allowed_error && no_iterations < max_iterations){
+                    new_value = rhs.calculate(last_value);
+                    error = abs((new_value - last_value)/new_value);
+                    last_value = new_value;
+                    std::cout << "Iterations NO:" << no_iterations << " X_new =  " << new_value << " Error: " <<  error * 100 << "%" << std::endl;
+                    no_iterations++;
+                }
+                
+            }
+
+            
 
 
     };
