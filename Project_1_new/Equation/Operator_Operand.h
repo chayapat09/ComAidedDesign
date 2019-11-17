@@ -16,7 +16,7 @@ namespace COMAID{
             int Required_operand;
             int outPriority;
             int inPriority;
-            float value;
+            double value;
 
         Operator_Operand(){
             //Default Constructor
@@ -25,11 +25,11 @@ namespace COMAID{
             this->Required_operand = 0;
             this->outPriority = 0;
             this->inPriority = 0;
-            this->value = float();
+            this->value = double();
 
         }
 
-        Operator_Operand(float value){
+        Operator_Operand(double value){
             //Operand Handle constructor
             this->isOperator = false;
             this->str = "";
@@ -45,7 +45,7 @@ namespace COMAID{
             this->Required_operand = 0;
             this->outPriority = 0;
             this->inPriority = 0;
-            this->value = (float) value;
+            this->value = (double) value;
         }
         Operator_Operand(std::string var){
             this->isOperator = false;
@@ -53,7 +53,7 @@ namespace COMAID{
             this->Required_operand = 0;
             this->outPriority = 0;
             this->inPriority = 0;
-            this->value = (float) value;
+            this->value = (double) value;
         }
 
         Operator_Operand virtual calculated(Operator_Operand a , Operator_Operand b){
@@ -273,6 +273,52 @@ namespace COMAID{
                 return Operator_Operand(std::log(a.value));
             }
     };
+
+    class asin : public Operator_Operand{
+        public:
+            asin(){
+                this->isOperator = true;
+                this->str = "asin";
+                this->Required_operand = 1;
+                this->outPriority = 9;
+                this->inPriority = 0;
+                this->value = 0;
+            }
+            Operator_Operand calculated(Operator_Operand a ) override{
+                return Operator_Operand(std::asin(a.value));
+            }
+    };
+
+    class acos : public Operator_Operand{
+        public:
+            acos(){
+                this->isOperator = true;
+                this->str = "acos";
+                this->Required_operand = 1;
+                this->outPriority = 9;
+                this->inPriority = 0;
+                this->value = 0;
+            }
+            Operator_Operand calculated(Operator_Operand a ) override{
+                return Operator_Operand(std::acos(a.value));
+            }
+    };
+
+    class atan : public Operator_Operand{
+        public:
+            atan(){
+                this->isOperator = true;
+                this->str = "atan";
+                this->Required_operand = 1;
+                this->outPriority = 9;
+                this->inPriority = 0;
+                this->value = 0;
+            }
+            Operator_Operand calculated(Operator_Operand a ) override{
+                return Operator_Operand(std::atan(a.value));
+            }
+    };
+
 
 }
 #endif

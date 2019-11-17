@@ -21,13 +21,16 @@ namespace COMAID{
 
             void to_equation(std::vector<std::string> eqn){
                 for(auto ops : eqn){
-                    float e = 2.71828;
-                    float pi = 3.14159;
+                    double e = 2.71828;
+                    double pi = 3.14159;
                     Operator_Operand * tmp;
-                    if      (ops == "sinh") tmp = new sinh();
+                    if      (ops == "asin") tmp = new asin();
+                    else if (ops == "sinh") tmp = new sinh();
                     else if (ops == "sin" ) tmp = new sin();
+                    else if (ops == "acos") tmp = new acos();
                     else if (ops == "cosh") tmp = new cosh();
                     else if (ops == "cos" ) tmp = new cos();
+                    else if (ops == "atan") tmp = new atan();
                     else if (ops == "tanh") tmp = new tanh();
                     else if (ops == "tan" ) tmp = new tan();
                     else if (ops == "ln"  ) tmp = new ln();
@@ -97,10 +100,13 @@ namespace COMAID{
                 std::string variable = "x"; //Only x are allowed for variable
 
                 std::vector< std::pair< std::string,std::string > > ops ; // All operators need to be replace
+                    ops.push_back(std::make_pair("asin(" ," asin ( "  ));
                     ops.push_back(std::make_pair("sinh(" ," sinh ( "  ));
                     ops.push_back(std::make_pair("sin("  ," sin ( "   ));
+                    ops.push_back(std::make_pair("acos(" ," acos ( "  ));
                     ops.push_back(std::make_pair("cosh(" ," cosh ( "  ));
                     ops.push_back(std::make_pair("cos("  ," cos ( "   ));
+                    ops.push_back(std::make_pair("atan(" ," atan ( "  ));
                     ops.push_back(std::make_pair("tanh(" ," tanh ( "  ));
                     ops.push_back(std::make_pair("tan("  ," tan ( "   ));
                     ops.push_back(std::make_pair("ln("   ," ln ( "    ));
@@ -231,7 +237,7 @@ namespace COMAID{
 
             }
 
-            float calculate(float x){
+            double calculate(double x){
                 if (equation.empty()) return 0;
                 std::vector<Operator_Operand *> tmp_new_x;
                 std::vector<Operator_Operand *> to_calculate_eqn;
@@ -251,7 +257,7 @@ namespace COMAID{
                     }
                 }
 
-                float ans = calculated_postfix(infix2postfix(to_calculate_eqn)).value;
+                double ans = calculated_postfix(infix2postfix(to_calculate_eqn)).value;
                 //to_calculate_eqn.clear();
                 for (auto i : tmp_new_x) delete i; // Delete new create objects
                 return ans;

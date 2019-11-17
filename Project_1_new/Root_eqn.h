@@ -30,7 +30,7 @@ namespace COMAID{
             //Data members linked to Equation class
             Equation lhs;
             Equation rhs;
-            float allowed_error;
+            double allowed_error;
 
             void insert(std::string &eqn){
                 std::string l_eqn,r_eqn;
@@ -59,31 +59,31 @@ namespace COMAID{
                 allowed_error = 0.01; // Default error = 1%
             }
 
-            Find_root(std::string eqn ,float error) {
+            Find_root(std::string eqn ,double error) {
                 // Constructor with specified allowed_error
                 insert(eqn);
                 allowed_error = error;
             }
 
-            void set_error(float err){
+            void set_error(double err){
                 allowed_error = err;
             }
 
-            float calculate(float x){
+            double calculate(double x){
                 return lhs.calculate(x) - rhs.calculate(x);
             }
 
             // Numerical Method
-            std::pair<bool,float> bi_section(float a , float b , int max_iterations = 20, bool display = false){
+            std::pair<bool,double> bi_section(double a , double b , int max_iterations = 20, bool display = false){
                 //        This method calculate root from bi_section method 
                 //and return values in form of {boolean,answer value} boolean true stands for
                 //root is between a and b , false stands for root is outside [a,b]
-                float f_left , f_right ,f_mid , x_mid , value_old , value_new , error = 1; // Set initial error to 100%
+                double f_left , f_right ,f_mid , x_mid , value_old , value_new , error = 1; // Set initial error to 100%
                 int no_iterations = 0;
                 f_left = calculate(a); f_right = calculate(b);
                 std::cout << f_left << " " << f_right << std::endl;
                 if (f_left * f_right > 0) {
-                    if (display) std::cout << "answer is not stays between 'a' and 'b' or 'a' and 'b' is too large .Please select new initial conditions" << std::endl;
+                    if (display) std::cout << "answer is not stays between 'a' and 'b' or difference between 'a' and 'b' is too large .Please select new initial conditions" << std::endl;
                     
                     return std::make_pair(false,0);
                 }
@@ -121,13 +121,14 @@ namespace COMAID{
 
             }
 
-            std::pair<bool,float> false_position(float a , float b , int max_iterations = 20, bool display = false){
+            std::pair<bool,double> false_position(double a , double b , int max_iterations = 20, bool display = false){
                 //        This method calculate root from false_position method 
                 //and return values in form of {boolean,answer value} boolean true stands for
                 //root is between a and b , false stands for root is outside [a,b]
-                float f_left , f_right ,f_new , x_new , value_old , value_new , error = 1; // Set initial error to 100%
+                double f_left , f_right ,f_new , x_new , value_old , value_new , error = 1; // Set initial error to 100%
                 int no_iterations = 0;
                 f_left = calculate(a); f_right = calculate(b);
+                //std::cout << f_left << " " << f_right << std::endl;
                 if (f_left * f_right > 0) {
                     if (display)
                         std::cout << "answer is not stays between a and b. Please select new initial conditions" << std::endl;
@@ -135,7 +136,7 @@ namespace COMAID{
                     return std::make_pair(false,0);
                 }
                 while ( error > allowed_error && no_iterations < max_iterations){
-                    x_new = (a*f_right+b*f_left)/(b-a);
+                    x_new = (a*f_right-b*f_left)/(f_right-f_left);
                     f_new = calculate(x_new);
                     // Found exact solution
                     if (f_new == 0 ) {
@@ -147,7 +148,7 @@ namespace COMAID{
                     if (f_new * f_left > 0){
                         value_old = a;
                         a = x_new;
-                        f_left = calculate(a);
+                        f_left = f_new;
                         value_new = a;
                     }
 
@@ -155,7 +156,7 @@ namespace COMAID{
                     else{
                         value_old = b;
                         b = x_new;
-                        f_right = calculate(b);
+                        f_right = f_new;
                         value_new = b;
                     }
                     error = abs((value_new - value_old)/value_new);
@@ -171,14 +172,14 @@ namespace COMAID{
             }
 
 
-            std::pair<bool,float> one_point_iteration(float a , int max_iterations = 20 , bool display = false){ // Need to constrain user to type in form x = ... 
+            std::pair<bool,double> one_point_iteration(double a , int max_iterations = 20 , bool display = false){ // Need to constrain user to type in form x = ... 
                 std::vector<std::string> str_lhs = lhs.get_equation_string();
                 //std::vector<std::string> str_rhs = rhs.get_equation_string();
-                if (! (str_lhs.size() == 1 && (str_lhs[0] == "x" || str_lhs[0] == "-x") ) ){
+                if (! (str_lhs.size() == 1 && (str_lhs[0] == "x" ) ) ){
                     throw "Please Rearrange Equation in form of x = ... to solve in one point iteration method\n" ;
                 }
                 int no_iterations = 1;
-                float last_value = a, new_value,error = 1;// Set initial error to 100%;
+                double last_value = a, new_value,error = 1;// Set initial error to 100%;
                 while (error > allowed_error && no_iterations < max_iterations){
                     new_value = rhs.calculate(last_value);
                     error = abs((new_value - last_value)/new_value);
