@@ -18,6 +18,7 @@ namespace COMAID{
         private:
             std::vector<Operator_Operand* > equation;
             //size_t mSize;
+            std::vector<std::string> functions;
 
             void to_equation(std::vector<std::string> eqn){
                 for(auto ops : eqn){
@@ -47,7 +48,7 @@ namespace COMAID{
                     else if (ops == "pi"  ) tmp = new Operator_Operand(pi);
                     else {
                         // Errors can be check here Eg. double dot operator errors here "1.22.33" "xsine" ...
-                        tmp = new Operator_Operand( std::stof(ops) );
+                        tmp = new Operator_Operand( std::stod(ops) );
                     }
 
                     equation.push_back(tmp);
@@ -58,10 +59,33 @@ namespace COMAID{
         public:
             Equation(){
                 equation = std::vector<Operator_Operand* >();
-                //mSize = 0;
+                // Initialize function name that we can use
+                functions.push_back("asin");
+                functions.push_back("sinh");
+                functions.push_back("sin" );
+                functions.push_back("acos");
+                functions.push_back("cosh");
+                functions.push_back("cos" );
+                functions.push_back("atan");
+                functions.push_back("tanh");
+                functions.push_back("tan" );
+                functions.push_back("ln"  );
+
             }
 
             Equation(std::string s_eqn){
+                // Initialize function name that we can use
+                functions.push_back("asin");
+                functions.push_back("sinh");
+                functions.push_back("sin" );
+                functions.push_back("acos");
+                functions.push_back("cosh");
+                functions.push_back("cos" );
+                functions.push_back("atan");
+                functions.push_back("tanh");
+                functions.push_back("tan" );
+                functions.push_back("ln"  );
+                
                 set_equation(s_eqn);
             }
             void set_equation(std::string eqn){
@@ -95,21 +119,15 @@ namespace COMAID{
                 return out;
             }
 
-            static std::vector<std::string> seperate_string(std::string eqn){ // Ex. eqn = "2/sinh(x^2+(1))+cos(6)" -> ["2" ,"/" ,"sinh" ,"(" ,"x" ,"^ " , ... ]
+            std::vector<std::string> seperate_string(std::string eqn){ // Ex. eqn = "2/sinh(x^2+(1))+cos(6)" -> ["2" ,"/" ,"sinh" ,"(" ,"x" ,"^ " , ... ]
+                // STATIC FUNCTION NEED TO CHANGE function to static 
                 eqn = " " + eqn + " ";
                 std::string variable = "x"; //Only x are allowed for variable
 
                 std::vector< std::pair< std::string,std::string > > ops ; // All operators need to be replace
-                    ops.push_back(std::make_pair("asin(" ," asin ( "  ));
-                    ops.push_back(std::make_pair("sinh(" ," sinh ( "  ));
-                    ops.push_back(std::make_pair("sin("  ," sin ( "   ));
-                    ops.push_back(std::make_pair("acos(" ," acos ( "  ));
-                    ops.push_back(std::make_pair("cosh(" ," cosh ( "  ));
-                    ops.push_back(std::make_pair("cos("  ," cos ( "   ));
-                    ops.push_back(std::make_pair("atan(" ," atan ( "  ));
-                    ops.push_back(std::make_pair("tanh(" ," tanh ( "  ));
-                    ops.push_back(std::make_pair("tan("  ," tan ( "   ));
-                    ops.push_back(std::make_pair("ln("   ," ln ( "    ));
+                    for (auto i : functions){
+                        ops.push_back(std::make_pair( i + "(" , " " + i + " ( " ) );
+                    }
                     ops.push_back(std::make_pair("("     ," ( "       ));
                     ops.push_back(std::make_pair(")"     ," ) "       ));
                     ops.push_back(std::make_pair("+"     ," + "       ));
@@ -135,6 +153,8 @@ namespace COMAID{
                 // Check for cases [ "-" , "-x" , "-2" , "x-2" , "2-x" , () - 1 -> ")"  , "-1"]
                 // -(x+y) -> "-" "(" .. , 4*-2 -> "4" "*" "-2" , 2*(-x+3) -> "2" "*" "(" "-x" / "-2" "+"
                 // 1-x > "1-x" ( ")" "-1" 
+                // -(...) + ..  , ( -(..) + 3) , -sin(x) + 3
+
                 std::vector<std::string> out_fix_neg;
                 for (int i = 0 ; i < out.size() ; i++){
                     // Find do '-' exists in out[i]
@@ -147,14 +167,32 @@ namespace COMAID{
 
                     if (idx != out[i].length()){ // Case found
                         if (idx == 0){
+
+                            // Case 1 '-' in first position and last operand == '('
                             if (i != 0 && out[i-1] == ")"){
                                 out_fix_neg.push_back("-");
                                 out_fix_neg.push_back(out[i].substr(1));
+                            } 
+
+                            // Case 2 eqn = "-func()" , "2+(-func())"
+                            else if (out[i].length() == 1 && is_function(out[i+1]) && (i == 0 || out[i-1] == "(" )){ 
+                                out_fix_neg.push_back("-1");
+                                out_fix_neg.push_back("*");
                             }
+                            // Case 3 eqn = "-number" , "2+(-number ... )"
+                            else if (i == 0 || out[i-1] == "(" ){
+                                out_fix_neg.push_back("-1");
+                                out_fix_neg.push_back("*");
+                                out_fix_neg.push_back(out[i].substr(1));
+                            }
+
+                            // Other cases Ex . -1*-2
                             else{
                                 out_fix_neg.push_back(out[i]);
                             }
                         }
+
+                        // Case - in between 
                         else{
                             out_fix_neg.push_back(out[i].substr(0,idx));//left
                             out_fix_neg.push_back("-");
@@ -164,6 +202,7 @@ namespace COMAID{
                     }
                     else out_fix_neg.push_back(out[i]);
                 }
+                
                 return out_fix_neg;
 
             }
@@ -174,6 +213,25 @@ namespace COMAID{
                     eqn.replace(replace_idx, s_old.length(), s_new);
                     replace_idx += s_new.length();
                     }
+            }
+
+            /*
+            static bool is_digit(std::string & number){
+
+                for (int i = 0 ; i < number.length() ; i++){
+                    if ( !( ( '0' <= i && i <= '9') || (i == '.') ) ) return false;
+                }
+                return true;
+
+            }
+            */
+
+            bool is_function(std::string & func){
+                // STATIC FUNCTION NEED TO CHANGE function to static 
+                for (auto i : functions){
+                    if (func == i || func == "(") return true;
+                }
+                return false;
             }
 
             std::vector<Operator_Operand *> infix2postfix(std::vector<Operator_Operand *> &infix){ // Don't change value of Operator_operand Object

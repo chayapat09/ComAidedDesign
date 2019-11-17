@@ -57,11 +57,11 @@ namespace COMAID{
         }
 
         Operator_Operand virtual calculated(Operator_Operand a , Operator_Operand b){
-            return 0;
+            return value;
         }
 
         Operator_Operand virtual calculated(Operator_Operand a){
-            return 0;
+            return value;
         }
     };
 

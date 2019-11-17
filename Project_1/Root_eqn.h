@@ -56,7 +56,7 @@ namespace COMAID{
             Find_root(std::string eqn){
                 // Default Constructor && Initialize values
                 insert(eqn);
-                allowed_error = 0.01; // Default error = 1%
+                allowed_error = 0; // Default error = 0%
             }
 
             Find_root(std::string eqn ,double error) {
@@ -189,9 +189,6 @@ namespace COMAID{
                 }
                 
             }
-
-            
-
 
     };
 }
