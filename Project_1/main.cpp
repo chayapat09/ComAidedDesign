@@ -25,15 +25,16 @@ void list_function(){
 }
 
 void info(){
-    cout << "-------------------------------INFO-------------------------------------------------------\n";
+    cout << "-------------------------------------INFO-------------------------------------------------\n";
     cout << "Equation that can be solve is one varible equation varible that this program\n";
     cout << "recognize as unknown is 'x' Ex . '2*ln(x^2) = 10*x' \n";
     cout << "Every Equations that insert in to this program need to writing correctly in \n";
-    cout << "form that computers can recognize and multipy operator are require Ex. '2(3) + 5 = x'\n";
-    cout << "is not allowed the corrected one is '2*(3) + 5 = x' , '2sin(x) = 1/2' is wrong  \n";
-    cout << "corrected one is '2*sin(x) = 1/2' \n";
+    //cout << "form that computers can recognize and multipy operator are require Ex. '2(3) + 5 = x'\n";
+    //cout << "is not allowed the corrected one is '2*(3) + 5 = x' , '2sin(x) = 1/2' is wrong  \n";
+    //cout << "corrected one is '2*sin(x) = 1/2' \n";
     cout << "blank spaces in equation will be all deleted automaticaly you can type in spaces\n";
     cout << "as you want Ex . ' 2*x + s in (x  ^2)  = 1  0 ' will be recognize as '2*x+sin(x^2) = 10'\n";
+    cout << "Examples Allowed Equation : -x(x^2+1)(x+2) - 2sinh(-cos(x)) = 1";
     cout << "------------------------------------------------------------------------------------------\n";
 }
 
