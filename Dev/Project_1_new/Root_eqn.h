@@ -81,10 +81,11 @@ namespace COMAID{
                 double f_left , f_right ,f_mid , x_mid , value_old , value_new , error = 1; // Set initial error to 100%
                 int no_iterations = 0;
                 f_left = calculate(a); f_right = calculate(b);
-                std::cout << f_left << " " << f_right << std::endl;
                 if (f_left * f_right > 0) {
-                    if (display) std::cout << "answer is not stays between 'a' and 'b' or difference between 'a' and 'b' is too large .Please select new initial conditions" << std::endl;
-                    
+                    if (display){
+                        std::cout << "answer is not stays between 'a' and 'b' or difference between 'a' and 'b' is too large .Please select new initial conditions" << std::endl;
+                        std::cout << "This calculation start with f(xL) = " << f_left  << " f(xR) = " << f_right << std::endl;
+                    }
                     return std::make_pair(false,0);
                 }
                 while ( error > allowed_error && no_iterations < max_iterations){
@@ -130,9 +131,10 @@ namespace COMAID{
                 f_left = calculate(a); f_right = calculate(b);
                 //std::cout << f_left << " " << f_right << std::endl;
                 if (f_left * f_right > 0) {
-                    if (display)
-                        std::cout << "answer is not stays between a and b. Please select new initial conditions" << std::endl;
-                    
+                    if (display){
+                        std::cout << "answer is not stays between 'a' and 'b' or difference between 'a' and 'b' is too large .Please select new initial conditions" << std::endl;
+                        std::cout << "This calculation start with f(xL) = " << f_left  << " f(xR) = " << f_right << std::endl;
+                    }
                     return std::make_pair(false,0);
                 }
                 while ( error > allowed_error && no_iterations < max_iterations){

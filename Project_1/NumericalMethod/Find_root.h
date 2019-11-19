@@ -17,7 +17,7 @@
 #include <unordered_map>
 #include <stdlib.h>
 
-#include "Equation/Equation.h"
+#include "../Equation/Equation.h"
 
 #ifndef _CHAYAPAT_ROOT_FIND_
 #define _CHAYAPAT_ROOT_FIND_
@@ -46,7 +46,11 @@ namespace COMAID{
                         }
                     }
                 }
-                if (cnt != 1) throw "Please check for '=' in equation!\n";
+                
+                if (cnt != 1) {
+                    std::string errmsg = "Please check for '=' in equation!";
+                    throw  errmsg;
+                }
                 lhs.set_equation(l_eqn);
                 rhs.set_equation(r_eqn);
             }
@@ -73,6 +77,15 @@ namespace COMAID{
                 return lhs.calculate(x) - rhs.calculate(x);
             }
 
+            std::string get_equation(){
+                std::string out;
+                for (auto i:lhs.get_equation_string()) out += i + " ";
+                out += "= ";
+                for (auto i:rhs.get_equation_string()) out += i + " ";
+
+                return out;
+            }
+
             // Numerical Method
             std::pair<bool,double> bi_section(double a , double b , int max_iterations = 20, bool display = false){
                 //        This method calculate root from bi_section method 
@@ -81,10 +94,12 @@ namespace COMAID{
                 double f_left , f_right ,f_mid , x_mid , value_old , value_new , error = 1; // Set initial error to 100%
                 int no_iterations = 0;
                 f_left = calculate(a); f_right = calculate(b);
-                std::cout << f_left << " " << f_right << std::endl;
                 if (f_left * f_right > 0) {
-                    if (display) std::cout << "answer is not stays between 'a' and 'b' or difference between 'a' and 'b' is too large .Please select new initial conditions" << std::endl;
-                    
+                    if (display){
+                        std::cout << "answer is not stays between 'a' and 'b' or difference between 'a' and 'b' is too large .Please select new initial conditions" << std::endl;
+                        std::cout << "other than that f(xL) and f(xR) must be differs in sign"<< std::endl;
+                        std::cout << "This calculation start with f(xL) = " << f_left  << " f(xR) = " << f_right << std::endl;
+                    }
                     return std::make_pair(false,0);
                 }
                 while ( error > allowed_error && no_iterations < max_iterations){
@@ -117,7 +132,7 @@ namespace COMAID{
 
                 }
 
-                return std::make_pair(true,value_new);
+                return (error > allowed_error) ? std::make_pair(false, (double) 0) : std::make_pair(true,value_new);
 
             }
 
@@ -130,9 +145,12 @@ namespace COMAID{
                 f_left = calculate(a); f_right = calculate(b);
                 //std::cout << f_left << " " << f_right << std::endl;
                 if (f_left * f_right > 0) {
-                    if (display)
-                        std::cout << "answer is not stays between a and b. Please select new initial conditions" << std::endl;
-                    
+                    if (display){
+                        std::cout << "answer is not stays between 'a' and 'b' or difference between 'a' and 'b' is too large .Please select new initial conditions" << std::endl;
+                        std::cout << "other than that f(xL) and f(xR) must be differs in sign"<< std::endl;
+                        std::cout << "This calculation start with f(xL) = " << f_left  << " f(xR) = " << f_right << std::endl;
+
+                    }
                     return std::make_pair(false,0);
                 }
                 while ( error > allowed_error && no_iterations < max_iterations){
@@ -167,16 +185,20 @@ namespace COMAID{
 
                 }
 
-                return std::make_pair(true,value_new);
+                return (error > allowed_error) ? std::make_pair(false, (double) 0) : std::make_pair(true,value_new);
 
             }
 
 
-            std::pair<bool,double> one_point_iteration(double a , int max_iterations = 20 , bool display = false){ // Need to constrain user to type in form x = ... 
+            std::pair<bool,double> one_point_iteration(double a , int max_iterations = 20 , bool display = false){
+                //        This method calculate root from one_point_iteration method 
+                //         and return values in form of {boolean,answer value} boolean 
+                //     true stands for root is error from calculation is less than allowed_error    
+                //     false stands for root is outside [a,b]
                 std::vector<std::string> str_lhs = lhs.get_equation_string();
-                //std::vector<std::string> str_rhs = rhs.get_equation_string();
                 if (! (str_lhs.size() == 1 && (str_lhs[0] == "x" ) ) ){
-                    throw "Please Rearrange Equation in form of x = ... to solve in one point iteration method\n" ;
+                    std::string errmsg = "Please Rearrange Equation in form of 'x = ...' to solve in one point iteration method";
+                    throw errmsg ;
                 }
                 int no_iterations = 1;
                 double last_value = a, new_value,error = 1;// Set initial error to 100%;
@@ -184,10 +206,11 @@ namespace COMAID{
                     new_value = rhs.calculate(last_value);
                     error = abs((new_value - last_value)/new_value);
                     last_value = new_value;
-                    std::cout << "Iterations NO:" << no_iterations << " X_new =  " << new_value << " Error: " <<  error * 100 << "%" << std::endl;
+                    if (display)
+                        std::cout << "Iterations NO:" << no_iterations << " X_new =  " << new_value << " Error: " <<  error * 100 << "%" << std::endl;
                     no_iterations++;
                 }
-                
+                return (error > allowed_error) ? std::make_pair(false, (double) 0) : std::make_pair(true,new_value);
             }
 
     };

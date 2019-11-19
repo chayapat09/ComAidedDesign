@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "Root_eqn.h"
+#include "NumericalMethod/Find_root.h"
 
 using namespace std;
 
@@ -58,7 +58,7 @@ int main(){
     test8.one_point_iteration(0.2);
     */
 
-    
+    /*
     string B = "( ( 42.471 + 309.068*x ) / ( 309.71*x - x^2 ) )";
     string eqn = "( ( 0.33+B*x )^2 +0.586^2 )  * 1.111^2/B^2 = 0.9995 * ( (0.33+x)^2 +0.586^2)";
     COMAID::Equation::replace_string(eqn , "B" , B);
@@ -72,5 +72,15 @@ int main(){
     test_10.false_position(0,1.3,30,true); // xl = -2 cause nan%
     // Error occur when value new = 0 or small value
     // Error occur when value_new = 0 that will cause error = Inf
-    
+    */
+    try{
+        COMAID::Find_root test_11("x = 2/pi^2");
+        test_11.set_error(0);
+        test_11.one_point_iteration(2,20,true);
+        
+    } catch (string e) {
+        cout << e << endl;
+    }
+
+
 }

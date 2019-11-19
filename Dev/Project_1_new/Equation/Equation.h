@@ -17,7 +17,6 @@ namespace COMAID{
     class Equation{
         private:
             std::vector<Operator_Operand* > equation;
-            //size_t mSize;
             std::vector<std::string> functions;
 
             void to_equation(std::vector<std::string> eqn){
@@ -46,8 +45,11 @@ namespace COMAID{
                     else if (ops == "-x"  ) tmp = new Operator_Operand("-x");
                     else if (ops == "e"   ) tmp = new Operator_Operand(e);
                     else if (ops == "pi"  ) tmp = new Operator_Operand(pi);
+                    else if (ops == "-e"   ) tmp = new Operator_Operand(-e);
+                    else if (ops == "-pi"  ) tmp = new Operator_Operand(-pi);
                     else {
-                        // Errors can be check here Eg. double dot operator errors here "1.22.33" "xsine" ...
+                        std::string errmsg = "Error:'" + ops + "' is not a valid variable";
+                        if (!is_digit(ops)) throw errmsg;
                         tmp = new Operator_Operand( std::stod(ops) );
                     }
 
@@ -110,7 +112,6 @@ namespace COMAID{
                 std::string out;
 
                 for (char i : eqn){
-                    //if      (i == 'e' ) out += "2.71828"  ;
                     if (i == ' ' ) continue  ; //Clean blank spaces 
                     else if ('A' <= i && i <= 'Z' ) out.push_back( 'a' + (i - 'A') ); //Change Upper cases to lower cases
                     else out.push_back(i);
@@ -172,10 +173,11 @@ namespace COMAID{
                             if (i != 0 && out[i-1] == ")"){
                                 out_fix_neg.push_back("-");
                                 out_fix_neg.push_back(out[i].substr(1));
-                            } 
+                            }
 
-                            // Case 2 eqn = "-func()" , "2+(-func())"
-                            else if (out[i].length() == 1 && is_function(out[i+1]) && (i == 0 || out[i-1] == "(" )){ 
+                            // Case 2 eqn = "-func()" , "2+(-func())" , "*-(x)"
+                            else if (out[i].length() == 1 && is_function(out[i+1]) && (i == 0 || 
+                                     out[i-1] == "(" || out[i-1] == "+" || out[i-1] == "*" || out[i-1] == "^") ){ 
                                 out_fix_neg.push_back("-1");
                                 out_fix_neg.push_back("*");
                             }
@@ -199,10 +201,12 @@ namespace COMAID{
                             if (out[i].substr(idx+1) != "") out_fix_neg.push_back(out[i].substr(idx+1));//right
 
                         }
+
                     }
                     else out_fix_neg.push_back(out[i]);
                 }
-                
+                for (auto i : out) std::cout << i << std::endl;
+                for (auto i : out_fix_neg) std::cout << i <<std::endl;
                 return out_fix_neg;
 
             }
@@ -215,16 +219,16 @@ namespace COMAID{
                     }
             }
 
-            /*
+            
             static bool is_digit(std::string & number){
 
-                for (int i = 0 ; i < number.length() ; i++){
-                    if ( !( ( '0' <= i && i <= '9') || (i == '.') ) ) return false;
+                for (auto i :number){
+                    if ( !( ( '0' <= i && i <= '9') || (i == '.') || (i == '-') ) ) return false;
                 }
                 return true;
 
             }
-            */
+            
 
             bool is_function(std::string & func){
                 // STATIC FUNCTION NEED TO CHANGE function to static 
@@ -324,7 +328,8 @@ namespace COMAID{
         std::vector<std::string> get_equation_string(){
             std::vector<std::string> out;
             for (auto i:equation){
-                out.push_back(i->str);
+                if (i->isOperator || i->str == "x" || i->str =="-x") out.push_back(i->str);
+                else out.push_back(std::to_string(i->value));
             }
             return out;
         }

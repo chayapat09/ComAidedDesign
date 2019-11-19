@@ -24,7 +24,11 @@ int main(){
             COMAID::sinh()
             COMAID::cosh()
             COMAID::tanh()
+            COMAID::asin()
+            COMAID::acos()
+            COMAID::atan()
             ln()
+        
 
     */
 

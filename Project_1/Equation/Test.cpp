@@ -46,7 +46,8 @@ int main(){
     Equation e8("(-x^8)");
     std::cout << e8.calculate(2) << std::endl;
 
-
+    Equation e9("-2 - 3 - 4 - 5 - 6");
+    std::cout << e9.calculate(2) << std::endl;
 
 
     
