@@ -45,8 +45,6 @@ namespace COMAID{
                     else if (ops == "-x"  ) tmp = new Operator_Operand("-x");
                     else if (ops == "e"   ) tmp = new Operator_Operand(e);
                     else if (ops == "pi"  ) tmp = new Operator_Operand(pi);
-                    else if (ops == "-e"   ) tmp = new Operator_Operand(-e);
-                    else if (ops == "-pi"  ) tmp = new Operator_Operand(-pi);
                     else {
                         std::string errmsg = "Error:'" + ops + "' is not a valid variable";
                         if (!is_digit(ops)) throw errmsg;
@@ -94,6 +92,8 @@ namespace COMAID{
                 // Clear old equations
                 // Clean string
                 // Seperate string
+                //   - Fix negative case
+                //   - Fix 2(3) , 2 sin(x) , (x)(y) , ()2
                 // Convert Seperated string to Opea_operand obj 
                 //  push_back(string)
                 //      - make new object
@@ -132,6 +132,7 @@ namespace COMAID{
                     ops.push_back(std::make_pair("("     ," ( "       ));
                     ops.push_back(std::make_pair(")"     ," ) "       ));
                     ops.push_back(std::make_pair("+"     ," + "       ));
+                    ops.push_back(std::make_pair("-"     ," - "       ));
                     ops.push_back(std::make_pair("*"     ," * "       ));
                     ops.push_back(std::make_pair("/"     ," / "       ));
                     ops.push_back(std::make_pair("^"     ," ^ "       ));
@@ -158,56 +159,73 @@ namespace COMAID{
 
                 std::vector<std::string> out_fix_neg;
                 for (int i = 0 ; i < out.size() ; i++){
-                    // Find do '-' exists in out[i]
-                    int idx = 0;
-                    for ( ; idx < out[i].length() ; idx++ ){
-                        if (out[i][idx] == '-'){
-                            break;
-                        }
-                    }
+                    if (out[i] == "-"){
+                        // negative operator
 
-                    if (idx != out[i].length()){ // Case found
-                        if (idx == 0){
-
-                            // Case 1 '-' in first position and last operand == '('
-                            if (i != 0 && out[i-1] == ")"){
-                                out_fix_neg.push_back("-");
-                                out_fix_neg.push_back(out[i].substr(1));
-                            }
-
-                            // Case 2 eqn = "-func()" , "2+(-func())" , "*-(x)"
-                            else if (out[i].length() == 1 && is_function(out[i+1]) && (i == 0 || 
-                                     out[i-1] == "(" || out[i-1] == "+" || out[i-1] == "*" || out[i-1] == "^") ){ 
-                                out_fix_neg.push_back("-1");
-                                out_fix_neg.push_back("*");
-                            }
-                            // Case 3 eqn = "-number" , "2+(-number ... )"
-                            else if (i == 0 || out[i-1] == "(" ){
-                                out_fix_neg.push_back("-1");
-                                out_fix_neg.push_back("*");
-                                out_fix_neg.push_back(out[i].substr(1));
-                            }
-
-                            // Other cases Ex . -1*-2
-                            else{
-                                out_fix_neg.push_back(out[i]);
-                            }
+                        // CASE 1 - ( x + y ) First in Expression -> -1 * ( x + y )
+                        if (i == 0){
+                            out_fix_neg.push_back("-1");
+                            out_fix_neg.push_back("*");
                         }
 
-                        // Case - in between 
+                        // CASE 2   3 * - x    ->   3 * -1 * x
+                        else if (out[i-1] == "+" || out[i-1] == "-" || out[i-1] == "*" || out[i-1] == "/" || out[i-1] == "^" ){
+                            out_fix_neg.push_back("-1");
+                            out_fix_neg.push_back("*");   
+                        }
+
+                        // CASE 3   2 * ( - x + y ) ->  2 * ( -1 * x + y )
+                        else if (is_function(out[i-1]) ) {
+                            out_fix_neg.push_back("-1");
+                            out_fix_neg.push_back("*");                            
+                        }
+
+                        // minus operator
                         else{
-                            out_fix_neg.push_back(out[i].substr(0,idx));//left
-                            out_fix_neg.push_back("-");
-                            if (out[i].substr(idx+1) != "") out_fix_neg.push_back(out[i].substr(idx+1));//right
-
+                            out_fix_neg.push_back(out[i]);
                         }
-
                     }
-                    else out_fix_neg.push_back(out[i]);
+
+                    else{
+                        out_fix_neg.push_back(out[i]);
+                    }
+
                 }
-                for (auto i : out) std::cout << i << std::endl;
-                for (auto i : out_fix_neg) std::cout << i <<std::endl;
-                return out_fix_neg;
+
+                //Fix multiply operator
+                std::vector<std::string> out_fix_mul;
+                out_fix_mul.push_back(out_fix_neg[0]);
+                for (int i = 1 ; i < out_fix_neg.size() ; i++){
+                    //CASE 1 digit()
+                    if (is_digit(out_fix_neg[i-1]) && out_fix_neg[i-1] != "-" && is_function(out_fix_neg[i]) ){
+                        out_fix_mul.push_back("*");
+                        out_fix_mul.push_back(out_fix_neg[i]);
+                    }
+
+                    //CASE 2 ()()
+                    else if (out_fix_neg[i-1] == ")" && is_function( out_fix_neg[i] )){
+                        out_fix_mul.push_back("*");
+                        out_fix_mul.push_back(out_fix_neg[i]);
+                    }
+
+                    //CASE 3 ()digit
+                    else if (out_fix_neg[i-1] == ")" && is_digit(out_fix_neg[i]) && out_fix_neg[i] != "-"){
+                        out_fix_mul.push_back("*");
+                        out_fix_mul.push_back(out_fix_neg[i]);
+                    }
+
+                    //CASE 4 '2.332x'
+                    else if (int pos = out_fix_neg[i].find('x') != std::string::npos && out_fix_neg[i].length() != 1){
+                        out_fix_mul.push_back(out_fix_neg[i].substr(0,pos)) ;
+                        out_fix_mul.push_back("*");
+                        out_fix_mul.push_back(out_fix_neg[i].substr(pos)) ; 
+                    }
+
+                    else{
+                        out_fix_mul.push_back(out_fix_neg[i]);
+                    }
+                }
+                return out_fix_mul;
 
             }
 
@@ -223,7 +241,7 @@ namespace COMAID{
             static bool is_digit(std::string & number){
 
                 for (auto i :number){
-                    if ( !( ( '0' <= i && i <= '9') || (i == '.') || (i == '-') ) ) return false;
+                    if ( !( ( '0' <= i && i <= '9') || (i == '.')  || (i == '-') || (i == 'x'))) return false;
                 }
                 return true;
 
@@ -309,11 +327,13 @@ namespace COMAID{
                         tmp_new_x.push_back(substituded_x);
                         to_calculate_eqn.push_back(substituded_x);
                     }
+                    /*
                     else if (i->str == "-x"){
                         Operator_Operand * substituded_x = new Operator_Operand(-x);
                         tmp_new_x.push_back(substituded_x);
                         to_calculate_eqn.push_back(substituded_x);                       
                     }
+                    */
                     else{
                         to_calculate_eqn.push_back(i);
                     }
