@@ -42,7 +42,7 @@ namespace COMAID{
                     else if (ops == "-"   ) tmp = new minus();
                     else if (ops == "^"   ) tmp = new power();
                     else if (ops == "x"   ) tmp = new Operator_Operand("x"); // Varible fix to "x"
-                    else if (ops == "-x"  ) tmp = new Operator_Operand("-x");
+                    //else if (ops == "-x"  ) tmp = new Operator_Operand("-x");
                     else if (ops == "e"   ) tmp = new Operator_Operand(e);
                     else if (ops == "pi"  ) tmp = new Operator_Operand(pi);
                     else {
@@ -194,31 +194,38 @@ namespace COMAID{
 
                 //Fix multiply operator
                 std::vector<std::string> out_fix_mul;
-                out_fix_mul.push_back(out_fix_neg[0]);
-                for (int i = 1 ; i < out_fix_neg.size() ; i++){
+                for (int i = 0 ; i < out_fix_neg.size() ; i++){
                     //CASE 1 digit()
-                    if (is_digit(out_fix_neg[i-1]) && out_fix_neg[i-1] != "-" && is_function(out_fix_neg[i]) ){
+                    if (i != 0 && is_digit(out_fix_neg[i-1]) && out_fix_neg[i-1] != "-" && is_function(out_fix_neg[i]) ){
                         out_fix_mul.push_back("*");
                         out_fix_mul.push_back(out_fix_neg[i]);
                     }
 
                     //CASE 2 ()()
-                    else if (out_fix_neg[i-1] == ")" && is_function( out_fix_neg[i] )){
+                    else if (i != 0 && out_fix_neg[i-1] == ")" && is_function( out_fix_neg[i] )){
                         out_fix_mul.push_back("*");
                         out_fix_mul.push_back(out_fix_neg[i]);
                     }
 
                     //CASE 3 ()digit
-                    else if (out_fix_neg[i-1] == ")" && is_digit(out_fix_neg[i]) && out_fix_neg[i] != "-"){
+                    else if (i != 0 && out_fix_neg[i-1] == ")" && is_digit(out_fix_neg[i]) && out_fix_neg[i] != "-"){
                         out_fix_mul.push_back("*");
                         out_fix_mul.push_back(out_fix_neg[i]);
                     }
 
                     //CASE 4 '2.332x'
+                    /*
                     else if (int pos = out_fix_neg[i].find('x') != std::string::npos && out_fix_neg[i].length() != 1){
                         out_fix_mul.push_back(out_fix_neg[i].substr(0,pos)) ;
                         out_fix_mul.push_back("*");
                         out_fix_mul.push_back(out_fix_neg[i].substr(pos)) ; 
+                    }
+                    */
+
+                    else if ( *(out_fix_neg[i].end()-1) == 'x' && is_digit(out_fix_neg[i].substr(0,out_fix_neg[i].length()-1) ) ){
+                        out_fix_mul.push_back( out_fix_neg[i].substr(0,out_fix_neg[i].length()-1) );
+                        out_fix_mul.push_back("*");
+                        out_fix_mul.push_back("x");
                     }
 
                     else{
@@ -238,8 +245,8 @@ namespace COMAID{
             }
 
             
-            static bool is_digit(std::string & number){
-
+            static bool is_digit(std::string  number){
+                if (number.length() == 0 ) return false;
                 for (auto i :number){
                     if ( !( ( '0' <= i && i <= '9') || (i == '.')  || (i == '-') || (i == 'x'))) return false;
                 }

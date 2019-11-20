@@ -4,19 +4,21 @@
 #include "NumericalMethod/Find_root.h"
 using namespace std;
 
-COMAID::Find_root * new_equation_handle(){
+COMAID::Find_root * new_equation_handle(COMAID::Find_root * Equation){
     cout << "Please input equation (Ex . 2*x + 1 = 5 )\n" << ">> " ;
     string equation_string;
     getline(cin,equation_string);
     //cout << equation_string;
+    auto tmp = Equation;
     try {
-        auto eqn = new COMAID::Find_root(equation_string);
-        return eqn;
+        Equation =  new COMAID::Find_root(equation_string);
+        delete tmp;
+        return Equation;
     }
     catch (string e){
         cout << e << endl;
     }
-    return NULL;
+    return tmp;
 }
 
 
@@ -24,9 +26,16 @@ void list_function(){
 
 }
 
+void wait(){
+    do 
+    {
+        cout << '\n' << "Press a enter key to continue...";
+    } while (cin.get() != '\n');
+}
+
 void info(){
-    cout << "-------------------------------------INFO-------------------------------------------------\n";
-    cout << "Equation that can be solve is one varible equation varible that this program\n";
+    cout << "\n-------------------------------------INFO-------------------------------------------------\n";
+    cout << "Equation that can be solve is one varible equation. Varible that this program\n";
     cout << "recognize as unknown is 'x' Ex . '2*ln(x^2) = 10*x' \n";
     cout << "Every Equations that insert in to this program need to writing correctly in \n";
     //cout << "form that computers can recognize and multipy operator are require Ex. '2(3) + 5 = x'\n";
@@ -34,12 +43,12 @@ void info(){
     //cout << "corrected one is '2*sin(x) = 1/2' \n";
     cout << "blank spaces in equation will be all deleted automaticaly you can type in spaces\n";
     cout << "as you want Ex . ' 2*x + s in (x  ^2)  = 1  0 ' will be recognize as '2*x+sin(x^2) = 10'\n";
-    cout << "Examples Allowed Equation : -x(x^2+1)(x+2) - 2sinh(-cos(x)) = 1";
+    cout << "Examples Allowed Equation : -x(x^2+1)(x+2) - 2sinh(-cos(x)) = 1\n";
     cout << "------------------------------------------------------------------------------------------\n";
 }
 
 void solve_handle(COMAID::Find_root * Equation , int maxiter , double allowed_error){
-    cout << "[1] Bi-Section Method\n";
+    cout << "\n[1] Bi-Section Method\n";
     cout << "[2] False Position Method\n";
     cout << "[3] One point iteration Method\n";
     cout << "[4] Back\n";
@@ -49,7 +58,7 @@ void solve_handle(COMAID::Find_root * Equation , int maxiter , double allowed_er
     try{
     switch (stoi(option)){
         case 1:
-            cout << "Bi-Section Method Require two Initial condition to solve for solution\n";
+            cout << "\nBi-Section Method Require two Initial condition to solve for solution\n";
             cout << "Please set initial xL and xR thus xL have to be smaller than xR and root\n";
             cout << "must be within xL and xR\n";
             cout << "xL :";
@@ -60,7 +69,7 @@ void solve_handle(COMAID::Find_root * Equation , int maxiter , double allowed_er
             Equation->bi_section(stod(xL),stod(xR),maxiter,true);
             break;
         case 2:
-            cout << "False Position Method Require two Initial condition to solve for solution\n";
+            cout << "\nFalse Position Method Require two Initial condition to solve for solution\n";
             cout << "Please set initial xL and xR thus xL have to be smaller than xR and root\n";
             cout << "must be within xL and xR\n";
             cout << "xL :";
@@ -68,13 +77,10 @@ void solve_handle(COMAID::Find_root * Equation , int maxiter , double allowed_er
             cout << "xR :";
             getline(cin,xR);
             Equation->set_error(allowed_error);
-            Equation->bi_section(stod(xL),stod(xR),maxiter,true);
-            if(!Equation->false_position(stod(xL),stod(xR),maxiter,true).first){
-                
-            }
+            Equation->false_position(stod(xL),stod(xR),maxiter,true);
             break;
         case 3:
-            cout << "One Point iteration Method Require one Initial condition to solve for solution\n";
+            cout << "\nOne Point iteration Method Require one Initial condition to solve for solution\n";
             cout << "Please set initial guesses for solution :";
             getline(cin,xL);
             Equation->one_point_iteration(stod(xL),maxiter,true);
@@ -89,14 +95,17 @@ void solve_handle(COMAID::Find_root * Equation , int maxiter , double allowed_er
     catch (string errmsg) {
         cout << errmsg << endl;
     }
+    wait();
 }
 
 void help_handle(){
     
-    cout << "[1] Infomation\n";
-    cout << "[2] Help Bisection Method\n";
-    cout << "[3] Help False Position Method\n";
-    cout << "[4] Help One point iteration Method\n";
+    cout << "\n[1] Infomation\n";
+    cout << "[2] Avaliable Operators\n" ;
+    cout << "[3] Avaliable functions\n" ;
+    cout << "[4] Help Bisection Method\n";
+    cout << "[5] Help False Position Method\n";
+    cout << "[6] Help One point iteration Method\n";
     cout << "Please select option :";
     string option;
     getline(cin,option);
@@ -105,17 +114,23 @@ void help_handle(){
             info();
             break;
         case 2:
+            
+        case 3:
+
+        case 4:
             cout << "HELP BI\n";
             break;
-        case 3:
+        case 5:
             cout << "HELP Fales\n";
             break;
-        case 4:
+        case 6:
             cout << "HELP ONE\n";
             break;
         default:
             cout << "Invalid input\n";
     }
+    wait();
+
 }
 void help_bisection(){
 
@@ -134,7 +149,7 @@ int main(){
     COMAID::Find_root * Equation = NULL;
     int maxiter = 20;
     double allowed_error = 0.01;
-    cout << "-------------------WELCOME TO EQUATION SOLVER PROGRAM-----------------------\n";
+    cout << "\n-------------------WELCOME TO EQUATION SOLVER PROGRAM-----------------------\n";
     cout << "This program is example for implementing program by use of Find_root Library\n";
     cout << "this program can calculate root of equation by inserting string of equation \n";
     cout << "----------------------------------------------------------------------------\n";
@@ -160,8 +175,7 @@ int main(){
             getline(cin,option);
             switch (stoi(option)){
                 case 1:
-                    if(Equation != NULL) delete Equation;
-                    Equation = new_equation_handle();
+                    Equation = new_equation_handle(Equation);
                     break;
                 case 2:
                     solve_handle(Equation,maxiter,allowed_error);
