@@ -319,6 +319,21 @@ namespace COMAID{
             }
     };
 
+class sqrt : public Operator_Operand{
+    public :
+        sqrt(){
+            this->isOperator = true;
+            this->str = "sqrt";
+            this->Required_operand = 1;
+            this->outPriority = 9;
+            this->inPriority = 0;
+            this->value = 0;
+        }
+        Operator_Operand calculated(Operator_Operand a) override{
+            return Operator_Operand(std::sqrt(a.value));
+        }
+};
+
 
 }
 #endif

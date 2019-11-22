@@ -33,6 +33,7 @@ namespace COMAID{
                     else if (ops == "atan") tmp = new atan();
                     else if (ops == "tanh") tmp = new tanh();
                     else if (ops == "tan" ) tmp = new tan();
+                    else if (ops == "sqrt") tmp = new sqrt();
                     else if (ops == "ln"  ) tmp = new ln();
                     else if (ops == "("   ) tmp = new open_parentheses();
                     else if (ops == ")"   ) tmp = new close_parentheses();
@@ -69,6 +70,7 @@ namespace COMAID{
                 functions.push_back("atan");
                 functions.push_back("tanh");
                 functions.push_back("tan" );
+                functions.push_back("sqrt");
                 functions.push_back("ln"  );
 
             }
@@ -84,6 +86,7 @@ namespace COMAID{
                 functions.push_back("atan");
                 functions.push_back("tanh");
                 functions.push_back("tan" );
+                functions.push_back("sqrt");
                 functions.push_back("ln"  );
                 
                 set_equation(s_eqn);
@@ -93,11 +96,12 @@ namespace COMAID{
                 // Clean string
                 // Seperate string
                 //   - Fix negative case
-                //   - Fix 2(3) , 2 sin(x) , (x)(y) , ()2
+                //   - Fix * operator
+                //      - Fix 2(3) , 2 sin(x) , (x)(y) , ()2
                 // Convert Seperated string to Opea_operand obj 
                 //  push_back(string)
                 //      - make new object
-                // Fix * operator
+
                 
 
                 clear();
@@ -152,10 +156,6 @@ namespace COMAID{
                 }
 
                 // Handle negative number cases
-                // Check for cases [ "-" , "-x" , "-2" , "x-2" , "2-x" , () - 1 -> ")"  , "-1"]
-                // -(x+y) -> "-" "(" .. , 4*-2 -> "4" "*" "-2" , 2*(-x+3) -> "2" "*" "(" "-x" / "-2" "+"
-                // 1-x > "1-x" ( ")" "-1" 
-                // -(...) + ..  , ( -(..) + 3) , -sin(x) + 3
 
                 std::vector<std::string> out_fix_neg;
                 for (int i = 0 ; i < out.size() ; i++){
@@ -169,12 +169,19 @@ namespace COMAID{
                         }
 
                         // CASE 2   3 * - x    ->   3 * -1 * x
-                        else if (out[i-1] == "+" || out[i-1] == "-" || out[i-1] == "*" || out[i-1] == "/" || out[i-1] == "^" ){
+                        else if (out[i-1] == "+" || out[i-1] == "-" || out[i-1] == "*" || out[i-1] == "/" ){
                             out_fix_neg.push_back("-1");
                             out_fix_neg.push_back("*");   
                         }
 
-                        // CASE 3   2 * ( - x + y ) ->  2 * ( -1 * x + y )
+                        // CASE 3
+                        else if (out[i-1] == "^"){
+                            // Fill ()
+                            std::string errmsg = "a^-b form is not allowed please type in () to ensure what to calculate -> a^(-b) ";
+                            throw errmsg;
+                        }
+
+                        // CASE 4   2 * ( - x + y ) ->  2 * ( -1 * x + y )
                         else if (is_function(out[i-1]) ) {
                             out_fix_neg.push_back("-1");
                             out_fix_neg.push_back("*");                            
@@ -192,11 +199,15 @@ namespace COMAID{
 
                 }
 
+                //Fix ^-x -> ^(-1*x), ^-(...) -> ^(-1*(...)) , 
+
                 //Fix multiply operator
                 std::vector<std::string> out_fix_mul;
                 for (int i = 0 ; i < out_fix_neg.size() ; i++){
-                    //CASE 1 digit()
-                    if (i != 0 && is_digit(out_fix_neg[i-1]) && out_fix_neg[i-1] != "-" && is_function(out_fix_neg[i]) ){
+                    bool _is_digit_i = is_digit(out_fix_neg[i]) || out_fix_neg[i] == "e" || out_fix_neg[i] == "pi" ;
+                    bool _is_digit_i_before = is_digit(out_fix_neg[i-1]) || out_fix_neg[i-1] == "e" || out_fix_neg[i-1] == "pi" ;  // Bad design need to change 
+                    //CASE 1 digit()                                                                                               // by fix multipy operator
+                    if (i != 0 && _is_digit_i_before && out_fix_neg[i-1] != "-" && is_function(out_fix_neg[i]) ){                  // after change to Operator_Operand OBJ
                         out_fix_mul.push_back("*");
                         out_fix_mul.push_back(out_fix_neg[i]);
                     }
@@ -208,7 +219,7 @@ namespace COMAID{
                     }
 
                     //CASE 3 ()digit
-                    else if (i != 0 && out_fix_neg[i-1] == ")" && is_digit(out_fix_neg[i]) && out_fix_neg[i] != "-"){
+                    else if (i != 0 && out_fix_neg[i-1] == ")" && _is_digit_i && out_fix_neg[i] != "-"){
                         out_fix_mul.push_back("*");
                         out_fix_mul.push_back(out_fix_neg[i]);
                     }

@@ -202,7 +202,7 @@ namespace COMAID{
                 }
                 int no_iterations = 1;
                 double last_value = a, new_value,error = 1;// Set initial error to 100%;
-                while (error > allowed_error && no_iterations < max_iterations){
+                while (error > allowed_error && no_iterations <= max_iterations){
                     new_value = rhs.calculate(last_value);
                     error = abs((new_value - last_value)/new_value);
                     last_value = new_value;
