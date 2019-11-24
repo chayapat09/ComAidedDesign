@@ -4,6 +4,13 @@
 #include "NumericalMethod/Find_root.h"
 using namespace std;
 
+void wait(){
+    do 
+    {
+        cout << '\n' << "Press a enter key to continue...";
+    } while (cin.get() != '\n');
+}
+
 COMAID::Find_root * new_equation_handle(COMAID::Find_root * Equation){
     cout << "Please input equation (Ex . 2*x + 1 = 5 )\n" << ">> " ;
     string equation_string;
@@ -16,38 +23,64 @@ COMAID::Find_root * new_equation_handle(COMAID::Find_root * Equation){
         return Equation;
     }
     catch (string e){
-        cout << e << endl;
+        cout << '\n' << e << endl;
+        wait();
+        
     }
     return tmp;
 }
 
-
-void list_function(){
-
+void list_operator(){
+    cout << "\nAvaliable Operators:\n";
+    cout << "1.Plus '+'\n";
+    cout << "2.Minus '-'\n";
+    cout << "3.Multipy '*'\n";
+    cout << "4.Devide '/'\n";
+    cout << "5.Power '^'\n";
 }
 
-void wait(){
-    do 
-    {
-        cout << '\n' << "Press a enter key to continue...";
-    } while (cin.get() != '\n');
+void list_function(){
+    cout << "\nAvaliable Mathematical Functions:\n";
+    cout << "1.sin function    : sin(...) \n";
+    cout << "2.cosine function : cos(...) \n";
+    cout << "3.tan function    : tan(...) \n";
+    cout << "4.arcsin function : asin(...) \n";
+    cout << "5.arccos function : acos(...) \n";
+    cout << "6.arctan function : atan(...) \n";
+    cout << "7.hyperbolic sine function    : sinh(...) \n";
+    cout << "8.hyperbolic cossine function : cosh(...) \n";
+    cout << "9.hyperbolic tan function     : tanh(...) \n";
+    cout << "10.Natural logarithm function : ln(...) \n";
+    cout << "11.Square root function       : sqrt(...) \n\n";
+
+    cout << "NOTE: All Trigonometric function angle are in radians\n";
 }
 
 void info(){
     cout << "\n-------------------------------------INFO-------------------------------------------------\n";
-    cout << "Equation that can be solve is one varible equation. Varible that this program\n";
-    cout << "recognize as unknown is 'x' Ex . '2*ln(x^2) = 10*x' \n";
+    cout << "Equation that can be solve is one varible equation.Varible that this program\n";
+    cout << "recognize as unknown is 'x' Ex . '2*ln(x^2) = 10*x' \n\n";
     cout << "Every Equations that insert in to this program need to writing correctly in \n";
-    //cout << "form that computers can recognize and multipy operator are require Ex. '2(3) + 5 = x'\n";
+    cout << "form that computers can recognize. \n";
     //cout << "is not allowed the corrected one is '2*(3) + 5 = x' , '2sin(x) = 1/2' is wrong  \n";
     //cout << "corrected one is '2*sin(x) = 1/2' \n";
     cout << "blank spaces in equation will be all deleted automaticaly you can type in spaces\n";
-    cout << "as you want Ex . ' 2*x + s in (x  ^2)  = 1  0 ' will be recognize as '2*x+sin(x^2) = 10'\n";
-    cout << "Examples Allowed Equation : -x(x^2+1)(x+2) - 2sinh(-cos(x)) = 1\n";
+    cout << "as you want Ex . ' 2*x + s in (x  ^2)  = 1  0 ' will be recognize as '2*x+sin(x^2) = 10'\n\n";
+    cout << "Pharenthesis of function are always require as usual. For convenient some multipy operator * \n";
+    cout << "can be neglect in these condition : \n";
+    cout << "1.Numeric and varible '2*x' -> '2x' \n";
+    cout << "2.Between numeric and functions or (...) '2.75 * sin(x)' -> '2.75sin(x)' or '3 * (2)' -> '3(2)' \n";
+    cout << "3.Between two () () '(3-6*5) * (7^2)' -> (3-6*5)(7^2) \n\n";
+    cout << "Examples Allowed Equation : -x(x^2+1)(x+2) - 2sinh(-cos(x)) = ln(-3-x)\n";
     cout << "------------------------------------------------------------------------------------------\n";
 }
 
 void solve_handle(COMAID::Find_root * Equation , int maxiter , double allowed_error){
+    if (Equation == NULL) {
+        cout << "\nPlease set Equation first!\n";
+        wait();
+        return;
+    }
     cout << "\n[1] Bi-Section Method\n";
     cout << "[2] False Position Method\n";
     cout << "[3] One point iteration Method\n";
@@ -88,7 +121,7 @@ void solve_handle(COMAID::Find_root * Equation , int maxiter , double allowed_er
         case 4:
             break;
         default:
-            cout << "Invalid input\n";
+            cout << "\nInvalid input\n";
     }
 
     }
@@ -103,9 +136,11 @@ void help_handle(){
     cout << "\n[1] Infomation\n";
     cout << "[2] Avaliable Operators\n" ;
     cout << "[3] Avaliable functions\n" ;
+    /*
     cout << "[4] Help Bisection Method\n";
     cout << "[5] Help False Position Method\n";
     cout << "[6] Help One point iteration Method\n";
+    */
     cout << "Please select option :";
     string option;
     getline(cin,option);
@@ -114,9 +149,12 @@ void help_handle(){
             info();
             break;
         case 2:
-            
+            list_operator();
+            break;
         case 3:
-
+            list_function();
+            break;
+        /*
         case 4:
             cout << "HELP BI\n";
             break;
@@ -126,8 +164,9 @@ void help_handle(){
         case 6:
             cout << "HELP ONE\n";
             break;
+        */
         default:
-            cout << "Invalid input\n";
+            cout << "\nInvalid input\n";
     }
     wait();
 
@@ -165,9 +204,9 @@ int main(){
         cout << "Allowed Error : " + to_string(allowed_error* 100)  + " %\n\n";
         cout << "[1] Set Equation\n";
         cout << "[2] Solve Equation\n";
-        cout << "[3] Set error\n";
-        cout << "[4] Set Max iterations loop(s)\n";
-        cout << "[5] Help\n";
+        cout << "[3] Help\n";
+        cout << "[4] Set error\n";
+        cout << "[5] Set Max iterations loop(s)\n";
         cout << "[6] Exit\n";
         cout << "Please select option :";
         try{
@@ -181,28 +220,31 @@ int main(){
                     solve_handle(Equation,maxiter,allowed_error);
                     break;
                 case 3:
+                    help_handle();
+                    break;
+                case 4:
                     cout << "Please input error in % (Ex. 1%) : ";
                     getline(cin,inp);
                     allowed_error = stod(inp)/100;
                     break;
-                case 4:
+                case 5:
                     cout << "Please input Max iteration loop(s) : ";
                     getline(cin,inp);
                     maxiter = stoi(inp);
                     break;
-                case 5:
-                    help_handle();
-                    break;
+
                 case 6:
                     mainloop = false;
                     break;
                 default:
-                    cout << "Invalid input\n";
+                    cout << "\nInvalid input\n";
+                    wait();
                     break;
             }
         }
         catch (exception e) {
-            cout << "Invalid input exec \n";
+            cout << "\nInvalid input\n";
+            wait();
         }
         
         

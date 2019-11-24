@@ -11,7 +11,7 @@
 
 #ifndef _CHAYAPAT_EQUATION_
 #define _CHAYAPAT_EQUATION_
-//! #pragma once
+// #pragma once
 namespace COMAID{
 
     class Equation{
@@ -59,7 +59,6 @@ namespace COMAID{
 
         public:
             Equation(){
-                equation = std::vector<Operator_Operand* >();
                 // Initialize function name that we can use
                 functions.push_back("asin");
                 functions.push_back("sinh");
@@ -76,19 +75,7 @@ namespace COMAID{
             }
 
             Equation(std::string s_eqn){
-                // Initialize function name that we can use
-                functions.push_back("asin");
-                functions.push_back("sinh");
-                functions.push_back("sin" );
-                functions.push_back("acos");
-                functions.push_back("cosh");
-                functions.push_back("cos" );
-                functions.push_back("atan");
-                functions.push_back("tanh");
-                functions.push_back("tan" );
-                functions.push_back("sqrt");
-                functions.push_back("ln"  );
-                
+                *this = Equation();
                 set_equation(s_eqn);
             }
             void set_equation(std::string eqn){

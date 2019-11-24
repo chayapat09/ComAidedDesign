@@ -6,7 +6,6 @@
   by replacing varlable to numeric value then process it
   by using Stack and post_fix numberic calculation
 - Can find single root of equation by varies of numerical methods
-- Logging calculated values
 */
 
 //include require files

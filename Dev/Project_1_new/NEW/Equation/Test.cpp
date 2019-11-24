@@ -7,7 +7,7 @@
 using namespace COMAID;
 
 int main(){
-    /*
+    
     //std::string s = "2 * ( Sin ( 2 + cos ( 20 ^ 2 + x )    ) ) * ln ( x )   ";// { "2" , "*" ,"(" }
     std::string ss("2*Sin(sinH(cosh(cosh(cos(1*2*x*x^x^cosh(32.33))))))");
     Equation e(ss);
@@ -23,7 +23,7 @@ int main(){
     Equation e3("0.993");
     std::cout << e3.calculate(2) << std::endl;
 
-    */
+    
 
     Equation e4("e^(-x/4)*(2-x) -1");
 
@@ -31,7 +31,7 @@ int main(){
 
 
  
-    Equation e5("-3*(-2*-x) + (-x) - 2");
+    Equation e5("-3(-2*-x) + (-x) - 2");
 
     std::cout << e5.calculate(2) << std::endl;
 
