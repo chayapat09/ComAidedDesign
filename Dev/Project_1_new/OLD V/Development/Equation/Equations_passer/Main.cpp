@@ -32,7 +32,7 @@ int main(){
 
     */
 
-    // 2 * ( sin ( 2 + cos ( 20^2 ) ) ) * ln( 2 )
+    // 2 * ( sin ( 2 + cos ( 20^2 ) ) ) * ln( 2 ) 
     std::vector<Operator_Operand *> equation;     // Vector for store
 
     equation.push_back(new Operator_Operand(2));  // Number   2

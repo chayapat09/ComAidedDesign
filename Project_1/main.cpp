@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <stdio.h>
-#include "NumericalMethod/Find_root.h"
+#include "src/NumericalMethod/Find_root.h"
 using namespace std;
 
 void wait(){
