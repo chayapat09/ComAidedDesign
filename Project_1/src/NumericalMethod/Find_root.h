@@ -1,10 +1,7 @@
 /*
 ---------This is Class file for Root finder Object------------
-- This Object can store String of equations
+- This Object can store equations
 - One Find_root Object per equation
-- Calculate value from evaluating value in to string
-  by replacing varlable to numeric value then process it
-  by using Stack and post_fix numberic calculation
 - Can find single root of equation by varies of numerical methods
 */
 
@@ -20,7 +17,7 @@
 
 #ifndef _CHAYAPAT_ROOT_FIND_
 #define _CHAYAPAT_ROOT_FIND_
-//! #pragma_once
+// #pragma_once
 namespace COMAID{
 
 

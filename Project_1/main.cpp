@@ -116,6 +116,7 @@ void solve_handle(COMAID::Find_root * Equation , int maxiter , double allowed_er
             cout << "\nOne Point iteration Method Require one Initial condition to solve for solution\n";
             cout << "Please set initial guesses for solution :";
             getline(cin,xL);
+            Equation->set_error(allowed_error);
             Equation->one_point_iteration(stod(xL),maxiter,true);
             break;
         case 4:
